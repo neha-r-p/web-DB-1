@@ -15,22 +15,25 @@ router.get("/", (req, res) => {
     });
 });
 
-// router.get('/:id', (req, res) => {
-//     // select * from posts where id = 2
-//     const { id } = req.params;
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
 
-//     db('posts')
-//         .where({ id }) // always returns an array
-//         .first() // picks the first element of the resulting array
-//         .then(posts => {
-//             res.status(200).json(posts);
-//         })
-//         .catch(err => {
-//             res.json(err);
-//         });
-// });
-
-router.get('/:id', ())
+  db("accounts")
+    .where({ id })
+    .then(account => {
+      if (account.length) {
+        res.status(200).json(account);
+      } else {
+        res
+          .status(404)
+          .json({ error: "Account with specified ID doesn not exist." });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Account could not be retrieved" });
+    });
+});
 
 router.post("/", (req, res) => {
   const accountData = req.body;
