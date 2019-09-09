@@ -54,4 +54,18 @@ router.post("/", (req, res) => {
     });
 });
 
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  db("accounts")
+    .where({ id: req.params.id })
+    .del()
+    .then(count => {
+      res.status(200).json({ message: `Deleted ${count} account(s).` });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Account could not be deleted." });
+    });
+});
+
 module.exports = router;
