@@ -15,19 +15,13 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", validateAccountId, (req, res) => {
   const { id } = req.params;
 
   db("accounts")
     .where({ id })
     .then(account => {
-      if (account.length) {
-        res.status(200).json(account);
-      } else {
-        res
-          .status(404)
-          .json({ error: "Account with specified ID doesn not exist." });
-      }
+     res.status(200).json(account);
     })
     .catch(err => {
       console.log(err);
@@ -35,7 +29,7 @@ router.get("/:id", (req, res) => {
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", validateAccount, (req, res) => {
   const accountData = req.body;
 
   db("accounts")
@@ -54,7 +48,7 @@ router.post("/", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", validateAccountId, (req, res) => {
   const { id } = req.params;
   db("accounts")
     .where({ id: req.params.id })
@@ -68,4 +62,38 @@ router.delete("/:id", (req, res) => {
     });
 });
 
+//middleware
+
+function validateAccountId(req, res, next){
+ const { id } = req.params;
+
+ db('accounts')
+ .where({id})
+ .then(account => {
+    if (account.length) {
+        req.account = account
+        next();
+      } else {
+        res
+          .status(404)
+          .json({ error: "Account with specified ID doesn not exist." });
+      }
+ })
+}
+
+function validateAccount(req, res, next) {
+    const { name, budget } = req.body;
+  
+    if (name && budget) {
+      next();
+    } else if (name === "" || !budget) {
+      res.status(400).json({ error: "Both name and budget required" });
+    } else {
+      res.status(400).json({ error: "Missing project data" });
+    }
+  }
+  
+  module.exports = router;
+
 module.exports = router;
+
