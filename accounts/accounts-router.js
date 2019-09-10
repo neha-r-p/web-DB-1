@@ -108,5 +108,3 @@ function validateAccount(req, res, next) {
 }
 
 module.exports = router;
-
-
